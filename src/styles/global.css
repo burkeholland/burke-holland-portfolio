@@ -920,6 +920,7 @@ svg {
   padding: 0;
   border: 0;
   background: transparent;
+  font-size: inherit;
 }
 
 .prose blockquote {
