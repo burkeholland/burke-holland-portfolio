@@ -1,0 +1,33 @@
+---
+import type { BlogPost } from "../utils/blog";
+import {
+  formatDate,
+  getMarkdownBody,
+  getReadingMinutes,
+} from "../utils/blog";
+import { withBase } from "../utils/site";
+
+interface Props {
+  post: BlogPost;
+}
+
+const { post } = Astro.props;
+const postUrl = withBase(`/blog/${post.id}/`);
+const readingMinutes = getReadingMinutes(getMarkdownBody(post));
+---
+
+<article class="post-card">
+  <div class="post-card__meta">
+    <time datetime={post.data.pubDate.toISOString()}>
+      {formatDate(post.data.pubDate)}
+    </time>
+    <span aria-hidden="true">·</span>
+    <span>{readingMinutes} min read</span>
+  </div>
+  <h3><a href={postUrl}>{post.data.title}</a></h3>
+  <p class="post-card__description">{post.data.description}</p>
+  <div class="post-card__byline">
+    {post.data.example && <span class="sample-badge">Example post</span>}
+    <span>{post.data.author}</span>
+  </div>
+</article>

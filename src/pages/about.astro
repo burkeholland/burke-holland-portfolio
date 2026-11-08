@@ -1,0 +1,40 @@
+---
+import SiteLayout from "../layouts/SiteLayout.astro";
+import { profile } from "../data/profile";
+import { withBase } from "../utils/site";
+---
+
+<SiteLayout
+  title="About"
+  description="About Burke Holland, based in Franklin, Tennessee and associated with Microsoft."
+  canonicalPath="/about/"
+  activeNav="about"
+>
+  <section class="page-intro page-width">
+    <p class="eyebrow">About</p>
+    <h1>About Burke Holland</h1>
+    <p class="page-intro__lede">
+      Based in Franklin, Tennessee, Burke Holland is associated with Microsoft.
+    </p>
+  </section>
+
+  <section class="about-grid page-width">
+    <div class="about-copy">
+      <p>
+        Browse the public projects in <a href={withBase("/projects/")}>Projects</a>.
+        Notes marked <span class="sample-badge">Example post</span> are
+        demonstrations credited to Example content, not Burke.
+      </p>
+      <p>
+        The bio on Burke's GitHub profile reads “{profile.bio}”.
+      </p>
+      <a class="button button--primary" href={profile.githubUrl}>
+        Visit GitHub profile <span aria-hidden="true">↗</span>
+      </a>
+    </div>
+    <aside class="about-note" aria-label="Burke Holland's public bio">
+      <p class="eyebrow">From the GitHub profile</p>
+      <p class="about-note__quote">“{profile.bio}”</p>
+    </aside>
+  </section>
+</SiteLayout>
