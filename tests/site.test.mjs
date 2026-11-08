@@ -57,6 +57,11 @@ function assertMetadata(html, route) {
     new URL(image).pathname.startsWith(`${basePath}/`),
     `${route} Open Graph image includes the project base`,
   );
+  assert.match(html, /<meta property="og:image:type" content="image\/png"/u);
+  const twitterImage = html.match(
+    /<meta name="twitter:image" content="([^"]+)"/u,
+  )?.[1];
+  assert.equal(twitterImage, image);
 }
 
 function assertInternalUrlsUseBase(html, route) {
@@ -84,6 +89,119 @@ test("published routes render base-aware URLs and complete metadata", async () =
   assert.match(notFound, /<meta name="robots" content="noindex, nofollow"/u);
   assert.doesNotMatch(notFound, /<link rel="canonical"/u);
   assertInternalUrlsUseBase(notFound, "404");
+});
+
+test("the social card is a shipped 1200x630 PNG", async () => {
+  const image = await readFile(join(dist, "social-card.png"));
+  assert.equal(image.toString("hex", 0, 8), "89504e470d0a1a0a");
+  assert.equal(image.readUInt32BE(16), 1200);
+  assert.equal(image.readUInt32BE(20), 630);
+
+  const home = await readRoute("index.html");
+  const socialImage = home.match(
+    /<meta property="og:image" content="([^"]+)"/u,
+  )?.[1];
+  assert.ok(socialImage);
+  assert.equal(
+    new URL(socialImage).pathname,
+    `${basePath}/social-card.png`,
+  );
+});
+
+test("primary button hover text meets WCAG contrast in light and dark themes", async () => {
+  const css = await readFile(
+    new URL("../src/styles/global.css", import.meta.url),
+    "utf8",
+  );
+  const hoverRule = css.match(/\.button--primary:hover\s*\{([^}]+)\}/u)?.[1];
+  assert.ok(hoverRule, "primary button has a hover rule");
+  assert.match(hoverRule, /background:\s*var\(--accent\)/u);
+  assert.match(hoverRule, /color:\s*var\(--accent-foreground\)/u);
+
+  const themes = [
+    ["light", css.match(/^:root\s*\{([^}]+)\}/mu)?.[1]],
+    [
+      "dark preference",
+      css.match(/^:root\[data-theme="dark"\]\s*\{([^}]+)\}/mu)?.[1],
+    ],
+    [
+      "dark system default",
+      css.match(
+        /@media \(prefers-color-scheme: dark\)\s*\{\s*:root:not\(\[data-theme="light"\]\)\s*\{([^}]+)\}/u,
+      )?.[1],
+    ],
+  ];
+
+  const getColor = (block, variable) => {
+    const color = block.match(
+      new RegExp(`${variable}:\\s*(#[\\da-f]{6})`, "iu"),
+    )?.[1];
+    assert.ok(color, `${variable} is declared for the theme`);
+    return color;
+  };
+  const luminance = (color) => {
+    const channels = [1, 3, 5].map(
+      (offset) => Number.parseInt(color.slice(offset, offset + 2), 16) / 255,
+    );
+    const linear = channels.map((channel) =>
+      channel <= 0.04045
+        ? channel / 12.92
+        : ((channel + 0.055) / 1.055) ** 2.4,
+    );
+    return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+  };
+
+  for (const [theme, block] of themes) {
+    assert.ok(block, `${theme} colors are declared`);
+    const background = luminance(getColor(block, "--accent"));
+    const foreground = luminance(getColor(block, "--accent-foreground"));
+    const contrast =
+      (Math.max(background, foreground) + 0.05) /
+      (Math.min(background, foreground) + 0.05);
+    assert.ok(contrast >= 4.5, `${theme} hover contrast is ${contrast.toFixed(2)}:1`);
+  }
+});
+
+test("the homepage identifies Burke and About keeps the example disclosure", async () => {
+  const home = await readRoute("index.html");
+  const about = await readRoute("about/index.html");
+
+  assert.match(home, /<h1>Burke Holland<\/h1>/u);
+  assert.match(about, /<h1>About Burke Holland<\/h1>/u);
+  assert.match(
+    about,
+    /Based in Franklin, Tennessee, Burke Holland is associated with Microsoft/u,
+  );
+  assert.doesNotMatch(about, /A few details, clearly sourced|public profile lists/u);
+  assert.match(about, /Example post/u);
+  assert.match(about, /Example content/u);
+});
+
+test("project links include their visible text in the accessible name", async () => {
+  const projects = await readRoute("projects/index.html");
+  const links = [
+    ...projects.matchAll(
+      /<a class="project-card__link"[^>]*aria-label="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gu,
+    ),
+  ];
+
+  assert.ok(links.length > 0, "project links are rendered");
+  for (const [, accessibleName, visibleText] of links) {
+    assert.match(accessibleName, /View repository/u);
+    assert.match(visibleText, /View repository/u);
+  }
+});
+
+test("system theme changes resync the toggle until an explicit theme is chosen", async () => {
+  const layout = await readFile(
+    new URL("../src/layouts/SiteLayout.astro", import.meta.url),
+    "utf8",
+  );
+
+  assert.match(
+    layout,
+    /systemColorScheme\.addEventListener\("change",\s*\(\) => \{\s*if \(!document\.documentElement\.dataset\.theme\)\s*\{\s*syncThemeButton\(\);/u,
+  );
 });
 
 test("example posts are labeled and credited on home, archive, and detail", async () => {

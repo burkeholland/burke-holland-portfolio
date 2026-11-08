@@ -1,55 +1,40 @@
 ---
 import SiteLayout from "../layouts/SiteLayout.astro";
 import { profile } from "../data/profile";
+import { withBase } from "../utils/site";
 ---
 
 <SiteLayout
   title="About"
-  description="Verified public profile details and links for Burke Holland."
+  description="About Burke Holland, based in Franklin, Tennessee and associated with Microsoft."
   canonicalPath="/about/"
   activeNav="about"
 >
   <section class="page-intro page-width">
     <p class="eyebrow">About</p>
-    <h1>A few details, clearly sourced.</h1>
+    <h1>About Burke Holland</h1>
     <p class="page-intro__lede">
-      This page gathers the public profile facts and project links that anchor
-      this portfolio.
+      Based in Franklin, Tennessee, Burke Holland is associated with Microsoft.
     </p>
   </section>
 
   <section class="about-grid page-width">
     <div class="about-copy">
       <p>
-        Burke Holland's public profile lists a location in Franklin, Tennessee,
-        and Microsoft as the company. Its bio reads “{profile.bio}”.
+        Browse the public projects in <a href={withBase("/projects/")}>Projects</a>.
+        Notes marked <span class="sample-badge">Example post</span> are
+        demonstrations credited to Example content, not Burke.
       </p>
       <p>
-        Project summaries on this site come from the linked public repositories.
-        Notes marked <span class="sample-badge">Example post</span> are
-        demonstration content, credited to Example content rather than Burke.
+        The bio on Burke's GitHub profile reads “{profile.bio}”.
       </p>
       <a class="button button--primary" href={profile.githubUrl}>
         Visit GitHub profile <span aria-hidden="true">↗</span>
       </a>
     </div>
-    <dl class="facts-card">
-      <div>
-        <dt>Location</dt>
-        <dd>{profile.location}</dd>
-      </div>
-      <div>
-        <dt>Company</dt>
-        <dd>{profile.company}</dd>
-      </div>
-      <div>
-        <dt>GitHub</dt>
-        <dd><a href={profile.githubUrl}>burkeholland</a></dd>
-      </div>
-      <div>
-        <dt>Public bio</dt>
-        <dd>{profile.bio}</dd>
-      </div>
-    </dl>
+    <aside class="about-note" aria-label="Burke Holland's public bio">
+      <p class="eyebrow">From the GitHub profile</p>
+      <p class="about-note__quote">“{profile.bio}”</p>
+    </aside>
   </section>
 </SiteLayout>

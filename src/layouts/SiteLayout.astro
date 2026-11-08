@@ -26,7 +26,7 @@ const {
 } = Astro.props;
 const documentTitle = `${title} · ${profile.name}`;
 const canonicalUrl = canonicalPath ? absoluteUrl(canonicalPath) : undefined;
-const socialImage = absoluteUrl("/social-card.svg");
+const socialImage = absoluteUrl("/social-card.png");
 const navLinks = [
   { label: "About", key: "about", path: "/about/" },
   { label: "Projects", key: "projects", path: "/projects/" },
@@ -57,7 +57,7 @@ const navLinks = [
     <meta property="og:description" content={description} />
     {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
     <meta property="og:image" content={socialImage} />
-    <meta property="og:image:type" content="image/svg+xml" />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta
@@ -157,11 +157,12 @@ const navLinks = [
 
       if (themeButton) {
         const themePreferenceKey = "bh-theme";
+        const systemColorScheme = window.matchMedia(
+          "(prefers-color-scheme: dark)",
+        );
         const getCurrentTheme = () =>
           document.documentElement.dataset.theme ??
-          (window.matchMedia("(prefers-color-scheme: dark)").matches
-            ? "dark"
-            : "light");
+          (systemColorScheme.matches ? "dark" : "light");
         const syncThemeButton = () => {
           themeButton.setAttribute(
             "aria-pressed",
@@ -171,6 +172,11 @@ const navLinks = [
 
         syncThemeButton();
         themeButton.hidden = false;
+        systemColorScheme.addEventListener("change", () => {
+          if (!document.documentElement.dataset.theme) {
+            syncThemeButton();
+          }
+        });
         themeButton.addEventListener("click", () => {
           const nextTheme = getCurrentTheme() === "dark" ? "light" : "dark";
           document.documentElement.dataset.theme = nextTheme;
