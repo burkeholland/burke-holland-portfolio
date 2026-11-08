@@ -1,0 +1,64 @@
+---
+import { render } from "astro:content";
+import SiteLayout from "./SiteLayout.astro";
+import type { BlogPost } from "../utils/blog";
+import {
+  formatDate,
+  getMarkdownBody,
+  getReadingMinutes,
+} from "../utils/blog";
+import { withBase } from "../utils/site";
+
+interface Props {
+  post: BlogPost;
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const postUrl = `/blog/${post.id}/`;
+const readingMinutes = getReadingMinutes(getMarkdownBody(post));
+---
+
+<SiteLayout
+  title={post.data.title}
+  description={post.data.description}
+  canonicalPath={postUrl}
+  activeNav="blog"
+  pageType="article"
+  publishedTime={post.data.pubDate}
+>
+  <article class="article-page page-width">
+    <header class="article-header">
+      <a class="back-link" href={withBase("/blog/")}>
+        <span aria-hidden="true">←</span> All notes
+      </a>
+      <div class="article-header__kicker">
+        {post.data.example && <span class="sample-badge">Example post</span>}
+        <span>{readingMinutes} min read</span>
+      </div>
+      <h1>{post.data.title}</h1>
+      <p class="article-header__description">{post.data.description}</p>
+      <div class="article-byline">
+        <span class="article-byline__author">{post.data.author}</span>
+        <time datetime={post.data.pubDate.toISOString()}>
+          {formatDate(post.data.pubDate)}
+        </time>
+      </div>
+      {
+        post.data.example && (
+          <p class="example-notice">
+            Demonstration content, not a post authored by Burke Holland.
+          </p>
+        )
+      }
+    </header>
+    <div class="prose">
+      <Content />
+    </div>
+    <div class="article-end">
+      <a class="text-link" href={withBase("/blog/")}>
+        Back to all notes <span aria-hidden="true">↗</span>
+      </a>
+    </div>
+  </article>
+</SiteLayout>

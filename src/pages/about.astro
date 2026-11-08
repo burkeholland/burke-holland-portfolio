@@ -1,0 +1,55 @@
+---
+import SiteLayout from "../layouts/SiteLayout.astro";
+import { profile } from "../data/profile";
+---
+
+<SiteLayout
+  title="About"
+  description="Verified public profile details and links for Burke Holland."
+  canonicalPath="/about/"
+  activeNav="about"
+>
+  <section class="page-intro page-width">
+    <p class="eyebrow">About</p>
+    <h1>A few details, clearly sourced.</h1>
+    <p class="page-intro__lede">
+      This page gathers the public profile facts and project links that anchor
+      this portfolio.
+    </p>
+  </section>
+
+  <section class="about-grid page-width">
+    <div class="about-copy">
+      <p>
+        Burke Holland's public profile lists a location in Franklin, Tennessee,
+        and Microsoft as the company. Its bio reads “{profile.bio}”.
+      </p>
+      <p>
+        Project summaries on this site come from the linked public repositories.
+        Notes marked <span class="sample-badge">Example post</span> are
+        demonstration content, credited to Example content rather than Burke.
+      </p>
+      <a class="button button--primary" href={profile.githubUrl}>
+        Visit GitHub profile <span aria-hidden="true">↗</span>
+      </a>
+    </div>
+    <dl class="facts-card">
+      <div>
+        <dt>Location</dt>
+        <dd>{profile.location}</dd>
+      </div>
+      <div>
+        <dt>Company</dt>
+        <dd>{profile.company}</dd>
+      </div>
+      <div>
+        <dt>GitHub</dt>
+        <dd><a href={profile.githubUrl}>burkeholland</a></dd>
+      </div>
+      <div>
+        <dt>Public bio</dt>
+        <dd>{profile.bio}</dd>
+      </div>
+    </dl>
+  </section>
+</SiteLayout>

@@ -1,0 +1,26 @@
+---
+import ProjectCard from "../components/ProjectCard.astro";
+import SiteLayout from "../layouts/SiteLayout.astro";
+import { projects } from "../data/projects";
+---
+
+<SiteLayout
+  title="Projects"
+  description="Public GitHub projects by Burke Holland, with descriptions from their repository READMEs."
+  canonicalPath="/projects/"
+  activeNav="projects"
+>
+  <section class="page-intro page-width">
+    <p class="eyebrow">Selected work</p>
+    <h1>Projects</h1>
+    <p class="page-intro__lede">
+      A selection of public repositories, described in their own words.
+    </p>
+  </section>
+
+  <section class="section page-width">
+    <div class="project-grid">
+      {projects.map((project, index) => <ProjectCard project={project} index={index + 1} />)}
+    </div>
+  </section>
+</SiteLayout>

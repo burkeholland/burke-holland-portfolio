@@ -1,0 +1,30 @@
+---
+import type { Project } from "../data/projects";
+
+interface Props {
+  project: Project;
+  index: number;
+}
+
+const { project, index } = Astro.props;
+---
+
+<article class="project-card">
+  <div class="project-art" data-art={project.art} aria-hidden="true">
+    <span class="project-art__orb"></span>
+    <span class="project-art__shape"></span>
+    <span class="project-art__index">{String(index).padStart(2, "0")}</span>
+  </div>
+  <div class="project-card__body">
+    <p class="project-card__eyebrow">GitHub repository</p>
+    <h3>{project.name}</h3>
+    <p class="project-card__description">{project.description}</p>
+    <a
+      class="project-card__link"
+      href={project.href}
+      aria-label={`View ${project.name} on GitHub`}
+    >
+      View repository <span aria-hidden="true">↗</span>
+    </a>
+  </div>
+</article>

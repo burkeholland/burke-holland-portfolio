@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#f5f2ea"/>
+  <path d="M0 80h1200M0 160h1200M0 240h1200M0 320h1200M0 400h1200M0 480h1200M0 560h1200M80 0v630M160 0v630M240 0v630M320 0v630M400 0v630M480 0v630M560 0v630M640 0v630M720 0v630M800 0v630M880 0v630M960 0v630M1040 0v630M1120 0v630" stroke="#1d2926" stroke-opacity=".055"/>
+  <rect x="64" y="64" width="1072" height="502" rx="4" fill="none" stroke="#d8d1c5" stroke-width="2"/>
+  <circle cx="975" cy="315" r="152" fill="none" stroke="#315d73" stroke-width="2"/>
+  <circle cx="975" cy="315" r="106" fill="none" stroke="#91412b" stroke-width="2"/>
+  <rect x="921" y="261" width="108" height="108" rx="27" fill="#315d73" fill-opacity=".12" stroke="#315d73" stroke-width="4" transform="rotate(45 975 315)"/>
+  <path d="M116 154h64" stroke="#91412b" stroke-width="5"/>
+  <text x="116" y="206" fill="#91412b" font-family="Arial,sans-serif" font-size="19" font-weight="700" letter-spacing="4">PORTFOLIO &amp; NOTES</text>
+  <text x="110" y="340" fill="#1d2926" font-family="Georgia,serif" font-size="76" letter-spacing="-3">Burke Holland</text>
+  <text x="116" y="404" fill="#56635e" font-family="Arial,sans-serif" font-size="27">Projects, links, and example technical writing</text>
+  <text x="116" y="516" fill="#56635e" font-family="Arial,sans-serif" font-size="18" letter-spacing="2">BURKEHOLLAND.GITHUB.IO</text>
+</svg>

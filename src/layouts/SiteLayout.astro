@@ -1,0 +1,188 @@
+---
+import "../styles/global.css";
+import { profile } from "../data/profile";
+import { absoluteUrl, withBase } from "../utils/site";
+
+type NavKey = "about" | "projects" | "blog";
+
+interface Props {
+  title: string;
+  description: string;
+  canonicalPath?: string;
+  activeNav?: NavKey;
+  pageType?: "website" | "article";
+  publishedTime?: Date;
+  noIndex?: boolean;
+}
+
+const {
+  title,
+  description,
+  canonicalPath,
+  activeNav,
+  pageType = "website",
+  publishedTime,
+  noIndex = false,
+} = Astro.props;
+const documentTitle = `${title} · ${profile.name}`;
+const canonicalUrl = canonicalPath ? absoluteUrl(canonicalPath) : undefined;
+const socialImage = absoluteUrl("/social-card.svg");
+const navLinks = [
+  { label: "About", key: "about", path: "/about/" },
+  { label: "Projects", key: "projects", path: "/projects/" },
+  { label: "Blog", key: "blog", path: "/blog/" },
+] as const;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="description" content={description} />
+    {noIndex && <meta name="robots" content="noindex, nofollow" />}
+    {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+    <title>{documentTitle}</title>
+    <link rel="icon" type="image/svg+xml" href={withBase("/favicon.svg")} />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="Burke Holland — Notes"
+      href={withBase("/rss.xml")}
+    />
+    <meta property="og:type" content={pageType} />
+    <meta property="og:site_name" content={profile.name} />
+    <meta property="og:title" content={documentTitle} />
+    <meta property="og:description" content={description} />
+    {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
+    <meta property="og:image" content={socialImage} />
+    <meta property="og:image:type" content="image/svg+xml" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Burke Holland — projects and notes"
+    />
+    {pageType === "article" &&
+      publishedTime && (
+        <meta
+          property="article:published_time"
+          content={publishedTime.toISOString()}
+        />
+      )}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={documentTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={socialImage} />
+    <meta name="theme-color" content="#f5f2ea" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#172123" media="(prefers-color-scheme: dark)" />
+    <script is:inline>
+      try {
+        const savedTheme = window.localStorage.getItem("bh-theme");
+        if (savedTheme === "light" || savedTheme === "dark") {
+          document.documentElement.dataset.theme = savedTheme;
+        }
+      } catch (error) {
+        console.warn("Theme preference is unavailable; using system settings.", error);
+      }
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header">
+      <div class="site-header__inner page-width">
+        <a class="brand" href={withBase("/")} aria-label="Burke Holland home">
+          <span class="brand__mark" aria-hidden="true">BH</span>
+          <span class="brand__name">Burke Holland</span>
+        </a>
+        <nav class="site-nav" aria-label="Primary navigation">
+          {
+            navLinks.map((item) => (
+              <a
+                href={withBase(item.path)}
+                aria-current={activeNav === item.key ? "page" : undefined}
+              >
+                {item.label}
+              </a>
+            ))
+          }
+        </nav>
+        <button
+          class="theme-toggle"
+          type="button"
+          aria-label="Toggle dark theme"
+          aria-pressed="false"
+          data-theme-toggle
+          hidden
+        >
+          <svg
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+            focusable="false"
+            class="theme-toggle__icon"
+          >
+            <circle cx="12" cy="12" r="4"></circle>
+            <path
+              d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"
+            ></path>
+          </svg>
+          <span class="theme-toggle__text">Theme</span>
+        </button>
+      </div>
+    </header>
+    <main id="main-content" tabindex="-1">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="site-footer__inner page-width">
+        <div>
+          <a class="site-footer__name" href={withBase("/")}>{profile.name}</a>
+          <p>
+            {profile.location} <span aria-hidden="true">·</span> {profile.company}
+          </p>
+        </div>
+        <nav class="site-footer__links" aria-label="Footer navigation">
+          <a href={withBase("/projects/")}>Projects</a>
+          <a href={withBase("/blog/")}>Writing</a>
+          <a href={withBase("/rss.xml")}>RSS</a>
+          <a href={profile.githubUrl}>GitHub</a>
+        </nav>
+      </div>
+    </footer>
+    <script>
+      const themeButton = document.querySelector<HTMLButtonElement>(
+        "[data-theme-toggle]",
+      );
+
+      if (themeButton) {
+        const themePreferenceKey = "bh-theme";
+        const getCurrentTheme = () =>
+          document.documentElement.dataset.theme ??
+          (window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light");
+        const syncThemeButton = () => {
+          themeButton.setAttribute(
+            "aria-pressed",
+            String(getCurrentTheme() === "dark"),
+          );
+        };
+
+        syncThemeButton();
+        themeButton.hidden = false;
+        themeButton.addEventListener("click", () => {
+          const nextTheme = getCurrentTheme() === "dark" ? "light" : "dark";
+          document.documentElement.dataset.theme = nextTheme;
+          syncThemeButton();
+
+          try {
+            window.localStorage.setItem(themePreferenceKey, nextTheme);
+          } catch (error) {
+            console.warn("Theme preference could not be saved.", error);
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

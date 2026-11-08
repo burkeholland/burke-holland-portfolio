@@ -1,0 +1,33 @@
+---
+import PostCard from "../../components/PostCard.astro";
+import SiteLayout from "../../layouts/SiteLayout.astro";
+import { getPublishedPosts } from "../../utils/blog";
+import { withBase } from "../../utils/site";
+
+const posts = await getPublishedPosts();
+---
+
+<SiteLayout
+  title="Blog"
+  description="A dated Markdown archive of technical notes, with reading times, example labels, and RSS."
+  canonicalPath="/blog/"
+  activeNav="blog"
+>
+  <section class="page-intro page-width">
+    <p class="eyebrow">Writing archive</p>
+    <h1>Notes</h1>
+    <p class="page-intro__lede">
+      Markdown entries with dates, reading times, and a clear byline. Example
+      entries are labeled and credited to Example content.
+    </p>
+    <a class="text-link feed-link" href={withBase("/rss.xml")}>
+      Subscribe via RSS <span aria-hidden="true">↗</span>
+    </a>
+  </section>
+
+  <section class="section page-width" aria-label="Published posts">
+    <div class="post-grid post-grid--archive">
+      {posts.map((post) => <PostCard post={post} />)}
+    </div>
+  </section>
+</SiteLayout>
