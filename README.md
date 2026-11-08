@@ -1,18 +1,18 @@
 # Burke Holland Portfolio
 
-An Astro static portfolio and Markdown blog. The home page (`/`) presents the portfolio; the blog index (`/blog/`) and individual `/blog/<slug>` pages are generated from the blog content collection. Project cards use verified project data.
+An Astro static portfolio and Markdown blog, built into `dist/`. The home page (`/`) presents a portfolio overview; `/about/` and `/projects/` provide profile and project details; `/blog/` lists posts and `/blog/<slug>/` serves each post. The site also includes an RSS feed at `/rss.xml` and a custom `404.html` not-found page.
 
 ## Content
 
 - `src/data/profile.ts` contains profile data.
 - `src/data/projects.ts` contains verified project data.
-- `src/content/blog/` contains Markdown posts. Each post requires `title`, `description`, `pubDate` (publication date), and `author` (the byline); `tags` are optional.
+- `src/content/blog/` contains Markdown posts; `src/content.config.ts` defines their schema. Each post requires `title`, `description`, `pubDate` (publication date), and `author` (the displayed byline). `pubDate` controls newest-first ordering; `tags` are optional.
 
-`draft` defaults to `false`, so set `draft: true` while writing; only non-drafts are published. `example` defaults to `false`. Example posts use `example: true` and `author: Example content`, and keep their sample label in the blog and feed. Replace or remove all example posts before presenting the site as Burke's writing.
+`draft` and `example` default to `false`. Set `draft: true` while writing; only non-drafts appear on the blog or in its RSS feed. Example posts set `example: true` and `author: Example content`; they are labeled as examples in the blog and feed, but are published unless also marked as drafts. Replace or remove all example posts before presenting the site as Burke's writing.
 
 ## Local development
 
-Use Node.js 22.x and npm. From the repository root:
+Use Node.js 22.23.4 or newer in the Node 22 line, and npm. From the repository root:
 
 ```sh
 npm ci
@@ -24,7 +24,7 @@ Start the development server:
 npm run dev
 ```
 
-Run checks and build the production site:
+Run checks, tests, and build the production site. `npm test` runs the production build and Node.js smoke tests; `npm run check` runs `astro check`.
 
 ```sh
 npm run check
